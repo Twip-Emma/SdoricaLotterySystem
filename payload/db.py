@@ -1,3 +1,11 @@
+'''
+Author: 七画一只妖 1157529280@qq.com
+Date: 2023-11-10 11:46:38
+LastEditors: 七画一只妖 1157529280@qq.com
+LastEditTime: 2023-11-12 12:26:19
+FilePath: \078万象抽卡3\payload\db.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 import sqlite3
 
 
@@ -55,17 +63,3 @@ async def sql_dml(statement, params=None):
 
     finally:
         conn.close()
-
-# 示例用法：
-
-# 查询示例
-# select_query = 'SELECT * FROM user_pkg WHERE char_name = ?'
-# select_params = ('John',)
-# result = sql_dql(select_query, select_params)
-# print(result)
-
-# 修改示例
-# update_statement = 'UPDATE user_pkg SET char_rank = ? WHERE char_name = ?'
-# update_params = ('New Rank', 'John')
-# affected_rows = sql_dml(update_statement, update_params)
-# print(f'Affected Rows: {affected_rows}')

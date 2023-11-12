@@ -32,6 +32,7 @@ async def get_pkg(user_id: str) -> list:
         WHERE user_id = ?
         GROUP BY char_name;
     ''', (user_id,))
+    print(user_pkg)
     return sorted(user_pkg, key=lambda x: x[1], reverse=True)
 
 
