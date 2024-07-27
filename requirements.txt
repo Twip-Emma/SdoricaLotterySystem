@@ -1,0 +1,5 @@
+fastapi==0.79.1
+sqlitedict==1.7.0
+aiosqlite==0.17.0
+Pillow==9.3.0
+uvicorn==0.18.3

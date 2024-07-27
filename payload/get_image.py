@@ -6,6 +6,16 @@ from pathlib import Path
 ABSOLUTE_PATH: str = Path(__file__).absolute().parents[0]
 TTF_PATH: str = f"{ABSOLUTE_PATH}\\zh-cn.ttf"
 
+# 获取当前文件的上一级绝对路径
+CURR_FILE_PATH = Path(__file__).absolute().parent.parent
+
+# 保存文件路径
+SAVE_FILE_PATH: Path = Path(CURR_FILE_PATH)/ r"cache"
+
+# 检查目录是否存在，如果不存在则创建
+if not SAVE_FILE_PATH.exists():
+    SAVE_FILE_PATH.mkdir(parents=True, exist_ok=True)
+
 
 char_rare_data = {
     "3阶": "frame50",
@@ -28,8 +38,9 @@ async def get_img_result(data:list, is_new_list:list, user_id:str):
         index += 1
     bg = finally_get_image(img_class=img_obj_list, user_id=user_id)
     # 保存图片并返回路径
-    bg.save(f"{ABSOLUTE_PATH}\\cache\\{user_id}.jpg")
-    return f"{ABSOLUTE_PATH}\\cache\\{user_id}.jpg"
+    save_path =  f"{SAVE_FILE_PATH}\\{user_id}.jpg"
+    bg.save(save_path)
+    return save_path
     
 
 
