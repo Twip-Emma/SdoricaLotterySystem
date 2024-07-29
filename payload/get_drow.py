@@ -8,7 +8,7 @@ from .get_image import get_img_result
 from .db import sql_dql
 
 ABSOLUTE_PATH: str = Path(__file__).absolute().parents[0]
-CHAR_PATH: str = f"{ABSOLUTE_PATH}\\char"
+CHAR_PATH: str = f"{ABSOLUTE_PATH}/char"
 PATTERN = re.compile(r'[-\d]+阶|\.[a-zA-Z]+')
 
 # 每日抽卡次数

@@ -1,10 +1,12 @@
+import base64
+import io
 import os
 from PIL import Image, ImageDraw, ImageFont
 # from Twip import ABSOLUTE_PATH, TTF_PATH
 
 from pathlib import Path
 ABSOLUTE_PATH: str = Path(__file__).absolute().parents[0]
-TTF_PATH: str = f"{ABSOLUTE_PATH}\\zh-cn.ttf"
+TTF_PATH: str = f"{ABSOLUTE_PATH}/zh-cn.ttf"
 
 # 获取当前文件的上一级绝对路径
 CURR_FILE_PATH = Path(__file__).absolute().parent.parent
@@ -37,10 +39,7 @@ async def get_img_result(data:list, is_new_list:list, user_id:str):
         ))
         index += 1
     bg = finally_get_image(img_class=img_obj_list, user_id=user_id)
-    # 保存图片并返回路径
-    save_path =  f"{SAVE_FILE_PATH}\\{user_id}.jpg"
-    bg.save(save_path)
-    return save_path
+    return img_to_base64(bg)
     
 
 
@@ -63,18 +62,18 @@ def blend_two_images(char_image_path, char_name, new):
 
     try:
         img1 = Image.open(char_image_path).resize((179, 256)).convert('RGBA')
-        img2 = Image.open(f"{ABSOLUTE_PATH}\\icon\\mask_base.png").resize(
+        img2 = Image.open(f"{ABSOLUTE_PATH}/icon/mask_base.png").resize(
             (179, 256)).convert('RGBA')
         img = Image.alpha_composite(img1, img2)
 
-        img3 = Image.open(f"{ABSOLUTE_PATH}\\icon\\{rare}.png").resize(
+        img3 = Image.open(f"{ABSOLUTE_PATH}/icon/{rare}.png").resize(
             (179, 256)).convert('RGBA')
         img = Image.alpha_composite(img, img3)
     
 
         # 判断是否为new
         if new == 0:
-            img4 = Image.open(f"{ABSOLUTE_PATH}\\icon\\new.png").resize(
+            img4 = Image.open(f"{ABSOLUTE_PATH}/icon/new.png").resize(
                 (179, 256)).convert('RGBA')
             img = Image.alpha_composite(img, img4)
         img = write_char(char_name, img)
@@ -89,7 +88,7 @@ def blend_two_images(char_image_path, char_name, new):
 # 返回：结果的图片对象
 def finally_get_image(img_class, user_id) -> Image.Image:
     bg_size = (2160, 1080)
-    bg_path = os.path.join(f'{ABSOLUTE_PATH}\\icon\\base.png')
+    bg_path = os.path.join(f'{ABSOLUTE_PATH}/icon/base.png')
     bg = Image.open(bg_path).convert('RGBA')
 
     fruit_size = (305, 423)  # 角色图尺寸声明
@@ -179,3 +178,11 @@ def add_text(bg, text):
     draw.text(text_coordinate, text, fill="#ffffffff", font=font)
 
     return bg
+
+
+def img_to_base64(image) -> str:
+    byte_arr = io.BytesIO()
+    image.save(byte_arr, format='JPEG')
+    byte_arr = byte_arr.getvalue()
+    encoded = base64.b64encode(byte_arr)
+    return encoded.decode('ascii')

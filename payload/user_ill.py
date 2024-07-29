@@ -2,9 +2,11 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2023-11-10 14:02:40
 LastEditors: tanyongqiang 1157529280@qq.com
-LastEditTime: 2024-07-27 23:48:11
+LastEditTime: 2024-07-29 11:29:38
 '''
 # 用户图鉴生成
+import base64
+import io
 from .get_drow import get_pool_dict
 from .user_pkg import get_pkg
 from .get_image import blend_two_images
@@ -17,8 +19,8 @@ import time
 
 
 ABSOLUTE_PATH: str = Path(__file__).absolute().parents[0]
-CHAR_PATH: str = f"{ABSOLUTE_PATH}\\char"
-TTF_PATH: str = f"{ABSOLUTE_PATH}\\zh-cn.ttf"
+CHAR_PATH: str = f"{ABSOLUTE_PATH}/char"
+TTF_PATH: str = f"{ABSOLUTE_PATH}/zh-cn.ttf"
 PATTERN = re.compile(r'[-\d]+阶|\.[a-zA-Z]+')
 
 # 获取当前文件的上一级绝对路径
@@ -63,6 +65,7 @@ async def get_user_ill(user_id: str):
     img_path = await generate_icon(img_list=img_list, char_name_list=char_name_list, ill_data=ill_data, user_id=user_id)
     t4 = time.time()
     print(f"生成灰色图片与彩色图片进行排序+生成图鉴图片：{t4 - t3}")
+
     return img_path
 
 
@@ -130,11 +133,11 @@ def blend_two_images(char_image_path, char_name, char_rank, name = None):
 
     try:
         img1 = Image.open(char_image_path).resize((179, 256)).convert('RGBA')
-        img2 = Image.open(f"{ABSOLUTE_PATH}\\icon\\mask_base.png").resize(
+        img2 = Image.open(f"{ABSOLUTE_PATH}/icon/mask_base.png").resize(
             (179, 256)).convert('RGBA')
         img = Image.alpha_composite(img1, img2)
 
-        img3 = Image.open(f"{ABSOLUTE_PATH}\\icon\\{rare}.png").resize(
+        img3 = Image.open(f"{ABSOLUTE_PATH}/icon/{rare}.png").resize(
             (179, 256)).convert('RGBA')
         img = Image.alpha_composite(img, img3)
         img = write_char(char_name, img)
@@ -276,10 +279,10 @@ async def generate_icon(img_list: list, char_name_list: list, ill_data: list, us
         index += 1
 
     # 保存图片并返回路径
-    save_path = f"{SAVE_FILE_PATH}\\{user_id}_图鉴.jpg"
+    save_path = f"{SAVE_FILE_PATH}/{user_id}_图鉴.jpg"
     result = result.convert("RGB")
     result.save(save_path, quality=50)
-    return save_path
+    return img_to_base64(result)
 
 
 # 根据卡池生成图鉴
@@ -377,7 +380,7 @@ async def get_pool_ill():
     draw.text((20,20), "作者：七画一只妖", fill="#FFFF00", font=font)
 
     # 保存图片并返回路径
-    save_path = f"{SAVE_FILE_PATH}\\全图鉴.png"
+    save_path = f"{SAVE_FILE_PATH}/全图鉴.png"
     result.save(save_path)
     return save_path
 
@@ -396,3 +399,10 @@ def get_new_title(key: str) -> str:
         return "MZ角色"
     else:
         return key
+    
+def img_to_base64(image) -> str:
+    byte_arr = io.BytesIO()
+    image.save(byte_arr, format='JPEG')
+    byte_arr = byte_arr.getvalue()
+    encoded = base64.b64encode(byte_arr)
+    return encoded.decode('ascii')
