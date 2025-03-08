@@ -2,13 +2,13 @@
 Author: 七画一只妖 1157529280@qq.com
 Date: 2023-11-10 14:02:40
 LastEditors: tanyongqiang 1157529280@qq.com
-LastEditTime: 2024-07-29 11:29:38
+LastEditTime: 2025-03-08 17:47:50
 '''
 # 用户图鉴生成
 import base64
 import io
 from .get_drow import get_pool_dict
-from .user_pkg import get_pkg
+from .user_pkg import get_pkg, get_user_roles_by_limit, get_user_pkg_type_count
 from .get_image import blend_two_images
 from PIL import Image, ImageDraw, ImageFont
 import math
@@ -145,9 +145,6 @@ def blend_two_images(char_image_path, char_name, char_rank, name = None):
     except:
         print(f"找不到文件{name}")
         return None
-        
-    
-    
 
 
 # 为角色图片上写上角色名字
@@ -406,3 +403,28 @@ def img_to_base64(image) -> str:
     byte_arr = byte_arr.getvalue()
     encoded = base64.b64encode(byte_arr)
     return encoded.decode('ascii')
+
+# 计算用户图鉴收集程度
+async def get_user_train(user_id: str) -> dict:
+    user_total = 0
+
+    # 获取用户总数
+    user_total = await get_user_roles_by_limit(user_id)
+    user_type_total = await get_user_pkg_type_count(user_id)
+        
+    pool_data = await get_pool_dict()
+    total_roles = sum(len(role_list) for role_list in pool_data.values())
+
+    # 计算图鉴收集程度
+    user_collect = round((user_type_total / total_roles), 5)
+
+    # 计算图鉴练度
+    role_train_max = 250
+    rola_train_total = role_train_max * total_roles
+    user_train_total = sum(item[1] for item in user_total)
+    user_train = round((user_train_total / rola_train_total), 5)
+    return {
+        "pool_total" : total_roles,
+        "user_collect" : user_collect,
+        "user_train" : user_train
+    }

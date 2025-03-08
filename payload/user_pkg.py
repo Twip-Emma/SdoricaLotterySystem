@@ -1,8 +1,8 @@
 '''
 Author: 七画一只妖 1157529280@qq.com
 Date: 2023-11-10 11:40:23
-LastEditors: 七画一只妖 1157529280@qq.com
-LastEditTime: 2023-11-10 12:35:30
+LastEditors: tanyongqiang 1157529280@qq.com
+LastEditTime: 2025-03-08 17:43:54
 '''
 import uuid
 import datetime
@@ -62,3 +62,48 @@ async def add_pkg(user_id: str, char_name: str, char_rank: str) -> bool:
         char_rank,
         user_id)
     )
+
+
+# 获取用户背包总数
+async def get_user_pkg_total(user_id: str) -> int:
+    user_total = await sql_dql('''
+        SELECT user_id, SUM( char_count ) AS total_count FROM user_pkg 
+        WHERE user_id = ? 
+    ''', (user_id,))
+    if user_total[0][0] is None:
+        return 0
+    return user_total[0][1]
+
+
+# 获取用户背包角色种类数
+async def get_user_pkg_type_count(user_id: str) -> int:
+    type_total = await sql_dql('''
+        SELECT count(*) from (SELECT
+            char_name,
+            char_rank,
+            SUM( char_count ) AS total_count 
+        FROM
+            user_pkg 
+        WHERE
+            user_id = ?
+        GROUP BY
+            char_name) t
+    ''', (user_id,))
+    return type_total[0][0]
+
+# 获取用户背包每个角色数量，数量大于250只返回250
+async def get_user_roles_by_limit(user_id:str) -> list:
+    user_pkg = await sql_dql('''
+    SELECT
+	char_name,
+    CASE
+		WHEN SUM( char_count ) > 250 THEN
+		250 ELSE SUM( char_count ) END AS total_count 
+	FROM
+		user_pkg 
+	WHERE
+		user_id = ?
+	GROUP BY
+		char_name
+    ''', (user_id,))
+    return user_pkg
