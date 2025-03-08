@@ -107,3 +107,18 @@ async def get_user_roles_by_limit(user_id:str) -> list:
 		char_name
     ''', (user_id,))
     return user_pkg
+
+
+# 获取所有用户练度排名
+async def get_all_rank_by_limit() -> list:
+    return await sql_dql('''
+    SELECT user_id, sum(t.total_count) AS user_total FROM (SELECT
+	user_id, char_name,
+    CASE
+		WHEN SUM( char_count ) > 250 THEN
+		250 ELSE SUM( char_count ) END AS total_count 
+	FROM
+		user_pkg 
+	GROUP BY
+		user_id, char_name) t GROUP BY user_id ORDER BY user_total DESC
+    ''')
