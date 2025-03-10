@@ -2,7 +2,7 @@
  * @Author: 七画一只妖 1157529280@qq.com
  * @Date: 2023-11-10 21:42:48
  * @LastEditors: tanyongqiang 1157529280@qq.com
- * @LastEditTime: 2025-03-08 18:26:03
+ * @LastEditTime: 2025-03-10 22:06:50
  * @FilePath: \078万象抽卡3\README.MD
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -113,8 +113,9 @@ docker build -t sdorica-service .
 docker run -d -p 8000:8000 --name sdorica-service sdorica-service
 ~~~
 最后确保你的服务器防火墙或安全组开放了8000端口，然后就可以请求此服务了
-
+导出为docker镜像文件 docker save -o sdorica-service.tar sdorica-service
 
 # 扩展
 >- 由于该抽卡系统是动态加载机制，所以你可以自己制作类似的图片直接放进payload/char里面即可，如果想新增一类角色，直接新增对应文件夹然后放入角色即可，没有需要修改配置文件的地方
 >- 注意图片比例需要和现有图片保持一致
+>- 图像尺寸：人像192-254，包含外框305-408
